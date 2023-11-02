@@ -1,5 +1,5 @@
 function getTableData(tableHeaders, tableDatas) {
-    console.log(tableHeaders);
+    // console.log(tableHeaders);
 
 }
 export default getTableData;

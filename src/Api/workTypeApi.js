@@ -4,29 +4,25 @@ import {
   setWorkTypeError,
   setWorkTypeLoading,
   setAddWorkTypeSuccess,
-  setAddWorkTypeFail
+  setAddWorkTypeFail,
 } from "../Actions/workTypeAction";
-import {
-  setLoading,
-  setError
-} from "../Actions/commonAction";
+import { setLoading, setError } from "../Actions/commonAction";
 import c from "../GlobalConstants/URL";
 import g from "../GlobalConstants/APIConstants";
-import { useNavigate } from 'react-router-dom';
 
-function getWorkTypeData(arg,data,id) {
+function getWorkTypeData(arg, data, id) {
   const usersConfig = {
     headers: {
       "x-api-key": g.APIKEY,
-      Authorization : `Bearer ${g.ACCESTOKEN}`
-    }
+      Authorization: `Bearer ${g.ACCESTOKEN}`,
+    },
   };
   return function (dispatch) {
     dispatch(setWorkTypeLoading(true));
     dispatch(setWorkTypeError(false));
     dispatch(setAddWorkTypeSuccess(false));
     dispatch(setAddWorkTypeFail(false));
-    if(arg === 'fetch'){
+    if (arg === "fetch") {
       axios
         .get(c.GETWORKTYPEURL, usersConfig)
         .then((response) => {
@@ -37,22 +33,19 @@ function getWorkTypeData(arg,data,id) {
         })
         .catch((e) => {
           dispatch(setWorkTypeLoading(false));
-          dispatch(setWorkTypeError(e.response.data.message));
+          dispatch(setAddWorkTypeFail(true));
+          dispatch(setError(e.response.data.message));
         });
-      }else if(arg === 'insert'){
-        dispatch(setLoading(true));
-        dispatch(setError(false));
-        dispatch(setAddWorkTypeSuccess(false));
-        dispatch(setAddWorkTypeFail(false));
-        axios
-        .post(
-          c.ADDWORKTYPEURL,
-          data,
-          usersConfig
-        )
+    } else if (arg === "insert") {
+      dispatch(setLoading(true));
+      dispatch(setError(false));
+      dispatch(setAddWorkTypeSuccess(false));
+      dispatch(setAddWorkTypeFail(false));
+      axios
+        .post(c.ADDWORKTYPEURL, data, usersConfig)
         .then((response) => {
           if (response.status == 201) {
-            dispatch(setAddWorkTypeSuccess(true))
+            dispatch(setAddWorkTypeSuccess(true));
           }
           dispatch(setLoading(false));
         })
@@ -61,20 +54,16 @@ function getWorkTypeData(arg,data,id) {
           dispatch(setAddWorkTypeFail(true));
           dispatch(setError(e.response.data.message));
         });
-      }
-      else if(arg === 'update'){
-        dispatch(setLoading(true));
-        dispatch(setError(false));
-        dispatch(setAddWorkTypeSuccess(false));
-        dispatch(setAddWorkTypeFail(false));
-        axios
-        .put(`${c.GETWORKTYPEURL}${id}`,
-          data,
-          usersConfig
-        )
+    } else if (arg === "update") {
+      dispatch(setLoading(true));
+      dispatch(setError(false));
+      dispatch(setAddWorkTypeSuccess(false));
+      dispatch(setAddWorkTypeFail(false));
+      axios
+        .put(`${c.GETWORKTYPEURL}${id}`, data, usersConfig)
         .then((response) => {
           if (response.status == 200) {
-            dispatch(setAddWorkTypeSuccess(true))
+            dispatch(setAddWorkTypeSuccess(true));
           }
           dispatch(setLoading(false));
         })
@@ -83,17 +72,13 @@ function getWorkTypeData(arg,data,id) {
           dispatch(setAddWorkTypeFail(true));
           dispatch(setError(e.response.data.message));
         });
-
-      }
-      else if (arg === 'delete'){
-        dispatch(setLoading(true));
-        dispatch(setError(false));
-        dispatch(setAddWorkTypeSuccess(false));
-        dispatch(setAddWorkTypeFail(false));
-        axios
-          .delete(`${c.GETWORKTYPEURL}${data}`,
-          usersConfig
-        )
+    } else if (arg === "delete") {
+      dispatch(setLoading(true));
+      dispatch(setError(false));
+      dispatch(setAddWorkTypeSuccess(false));
+      dispatch(setAddWorkTypeFail(false));
+      axios
+        .delete(`${c.GETWORKTYPEURL}${data}`, usersConfig)
         .then((response) => {
           if (response.status == 204) {
             dispatch(setAddWorkTypeSuccess(true));
@@ -101,11 +86,12 @@ function getWorkTypeData(arg,data,id) {
           dispatch(setWorkTypeLoading(false));
         })
         .catch((e) => {
-          dispatch(setAddWorkTypeFail(true))
+          dispatch(setAddWorkTypeFail(true));
           dispatch(setLoading(false));
-        });     
-      }
+          dispatch(setError(e.response.data.message));
+        });
     }
+  };
 }
 
 export default getWorkTypeData;

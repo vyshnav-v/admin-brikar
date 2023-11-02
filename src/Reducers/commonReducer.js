@@ -3,7 +3,7 @@ function commonReducer(prevState={
     loading : false,
     alrtstat : true
 }, action){
-    console.log(action)
+    // console.log(action)
     switch (action){
         case 'common':
             return{
@@ -16,7 +16,7 @@ function commonReducer(prevState={
                 loading : action.payload
             }
         case 'set-error':
-            console.log("error")
+            // console.log("error")
             return{
                 ...prevState,
                 error :action.payload
