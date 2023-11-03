@@ -3,11 +3,13 @@ import { configureStore} from "@reduxjs/toolkit";
 import loginReducer from "./Reducers/loginReducer";
 import commonReducer from "./Reducers/commonReducer";
 import workTypeReducer from "./Reducers/workTypeReducer";
+import educationReducer from "./Reducers/educationReducer";
 
 const rootReducer = combineReducers({
     login: loginReducer,
     common : commonReducer,
-    workType : workTypeReducer
+    workType : workTypeReducer,
+    education:educationReducer
 
 });
 

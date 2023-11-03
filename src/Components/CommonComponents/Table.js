@@ -3,6 +3,7 @@ import "../CommonComponents/table.css";
 import Status from "./Status";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Pagination from "react-bootstrap/Pagination";
 export default function Table(props) {
   const [tableData, setTableData] = useState(props.Data);
   const [sortActive, setSortActive] = useState("up");
@@ -11,9 +12,12 @@ export default function Table(props) {
   const { propHandleDelete } = props;
   const { propHandleAdd, propDeleteMessage, propHandleEdit, propLoading } =
     props;
-     const loading = propLoading;
-     const [show, setShow] = useState(false);
-     const [itemToDelete, setItemToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const maxPaginationPages = 3;
+  const loading = propLoading;
+  const [show, setShow] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
   useEffect(() => {
     setTableData(sortedData);
   }, [sortedData]);
@@ -55,8 +59,6 @@ export default function Table(props) {
     }
   };
 
- 
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleDelete = (id) => {
@@ -71,6 +73,51 @@ export default function Table(props) {
   };
   const handleEdit = (id) => {
     propHandleEdit(id);
+  };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = tableData.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(tableData.length / itemsPerPage);
+
+  // Calculate the start and end page numbers to display
+  let startPage = Math.max(1, currentPage - Math.floor(maxPaginationPages / 2));
+  let endPage = Math.min(startPage + maxPaginationPages - 1, totalPages);
+
+  if (totalPages <= maxPaginationPages) {
+    startPage = 1;
+    endPage = totalPages;
+  } else if (currentPage <= Math.floor(maxPaginationPages / 2)) {
+    endPage = maxPaginationPages;
+  } else if (currentPage >= totalPages - Math.floor(maxPaginationPages / 2)) {
+    startPage = totalPages - maxPaginationPages + 1;
+  }
+
+  const pageRange = Array.from({ length: endPage - startPage + 1 }).map(
+    (_, i) => startPage + i
+  );
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleFirstPage = () => {
+    setCurrentPage(1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handleLastPage = () => {
+    setCurrentPage(totalPages);
   };
   return (
     <div className='card shadow mb-4'>
@@ -94,7 +141,10 @@ export default function Table(props) {
               </span>
             </span>
           </div>
-          <Status propResponseMessage={responseMessage} />
+          <Status
+            propResponseMessage={responseMessage}
+            propActionType={"success"}
+          />
         </div>
       </div>
       <div className='card-body'>
@@ -120,8 +170,8 @@ export default function Table(props) {
               </tr>
             </thead>
             <tbody>
-              {tableData && !loading ? (
-                tableData.map((item, index) => (
+              {currentData && !loading ? (
+                currentData.map((item, index) => (
                   <tr>
                     <td>{index + 1}</td>
                     {props.columns.map((header) =>
@@ -157,6 +207,35 @@ export default function Table(props) {
           </table>
         </div>
       </div>
+      <div className='d-flex justify-content-center card-header p-3'>
+        <Pagination size='sm'>
+          <Pagination.First onClick={handleFirstPage} />
+          <Pagination.Prev onClick={handlePrevPage} />
+          {startPage > 1 && (
+            <Pagination.Ellipsis
+              onClick={() => setCurrentPage(startPage - 1)}
+            />
+          )}
+          {pageRange.map((page) => (
+            <Pagination.Item
+              key={page}
+              active={currentPage === page}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </Pagination.Item>
+          ))}
+          {endPage < totalPages && (
+            <Pagination.Ellipsis onClick={() => setCurrentPage(endPage + 1)} />
+          )}
+          <Pagination.Item disabled onClick={handleLastPage}>
+            {totalPages}
+          </Pagination.Item>
+          <Pagination.Next onClick={handleNextPage} />
+          <Pagination.Last onClick={handleLastPage} />
+        </Pagination>
+      </div>
+
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Delete Confirmation</Modal.Title>

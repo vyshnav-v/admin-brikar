@@ -52,6 +52,9 @@ function Status(props) {
               : data.workType.addWorktypeStatus &&
                 props.propActionType == "update"
               ? props.propResponseMessage.update
+              : data.workType.addWorktypeStatus &&
+                props.propActionType == "success"
+              ? props.propResponseMessage.success
               : data.workType.addWorktypeStatusFail
               ? props.propResponseMessage.fail
               : ""}

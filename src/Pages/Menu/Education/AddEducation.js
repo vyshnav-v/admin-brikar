@@ -1,69 +1,76 @@
-import { React, useEffect } from "react";
+import React, { useEffect } from "react";
 import Text from "../../../Components/InputComponents/Text";
 import AddSecButtons from "../../../Components/CommonComponents/AddSecButtons";
 import "../../Css/menu.css";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import getWorkTypeData from "../../../Api/workTypeApi";
+import getEducationData from "../../../Api/educationApi";
 import Status from "../../../Components/CommonComponents/Status";
 import { useParams } from "react-router-dom";
 
-function AddWorkType() {
+function AddEducation() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const pageTitle = "Add Work Types";
+  const pageTitle = "Add Education";
   const data = useSelector((state) => state);
-  const [inputWorkType, setInputWorkType] = useState({
-    worktype: "",
+  const [inputEducation, setInputEducation] = useState({
+    qualification: "",
   });
   const [validationError, setValidationError] = useState({
-    worktype: "",
+    qualification: "",
   });
   const responseMessage = {
-    insert: "Worktype successfully added",
-    fail: "some error occured",
-    update: "Worktype Updated Successfully",
+    insert: "Education successfully added",
+    fail: "Some error occurred",
+    update: "Education Updated Successfully",
   };
   const [areAllErrorsEmpty, setAreAllErrorsEmpty] = useState(
     Object.values(validationError).every((value) => !value)
   );
   const [editData, setEditData] = useState(data);
-console.log("helloooo",editData)
-  
+  console.log(
+    "data",
+    data.education.educationData.filter((obj) => obj.id == id)
+  );
+console.log("jhellooo",editData[0])
   useEffect(() => {
-    if (inputWorkType.worktype == "") {
-      setValidationError({ worktype: "Required Field" });
+    if (inputEducation.qualification === "") {
+      setValidationError({ qualification: "Required Field" });
     }
-  }, [inputWorkType]);
+  }, [inputEducation]);
+
   useEffect(() => {
-    if (editData[0] != null) {
-      setValidationError({ worktype: "" });
+    if (editData[0] !== null) {
+      setValidationError({ qualification: "" });
     }
   }, [editData]);
-  const handleWorkTypeChange = (newWorkType) => {
-    setInputWorkType((prevState) => ({
+
+  const handleEducationChange = (newEducation) => {
+    setInputEducation((prevState) => ({
       ...prevState,
-      [newWorkType.name]: newWorkType.value,
+      [newEducation.name]: newEducation.value,
     }));
     setValidationError((prevState) => ({
       ...prevState,
-      [newWorkType.name]: newWorkType.value != "" ? "" : "Required Field",
+      [newEducation.name]: newEducation.value !== "" ? "" : "Required Field",
     }));
   };
+
   useEffect(() => {
     setAreAllErrorsEmpty(
       Object.values(validationError).every((value) => !value)
     );
   }, [validationError]);
-  const handleAddWorkType = (type) => {
-    if (type == "save") {
-      dispatch(getWorkTypeData("insert", inputWorkType, 0));
-      // setInputWorkType("");
-    } else if (type == "cancel") {
+
+  const handleAddEducation = (type) => {
+    if (type === "save") {
+      dispatch(getEducationData("insert", inputEducation, 0));
+      // setInputEducation("");
+    } else if (type === "cancel") {
       window.history.back();
     } else {
       if (id !== undefined) {
-        dispatch(getWorkTypeData("update", inputWorkType, id));
+        dispatch(getEducationData("update", inputEducation, id));
       }
     }
   };
@@ -71,9 +78,11 @@ console.log("helloooo",editData)
   const goBack = () => {
     window.history.back();
   };
+
   useEffect(() => {
-    setEditData(data.workType.workTypedata.filter((obj) => obj.id == id));
+    setEditData(data.education.educationData.filter((obj) => obj.id == id));
   }, [data]);
+
   return (
     <div>
       <div className='container-fluid'>
@@ -96,18 +105,18 @@ console.log("helloooo",editData)
             <div className='row'>
               <div className='col-md-6'>
                 <label>
-                  Work Type Name <span className='errorLabel'>*</span>
+                  Education Type <span className='errorLabel'>*</span>
                 </label>
                 <Text
-                  propOnChange={handleWorkTypeChange}
-                  propValidationError={validationError.worktype}
-                  propAttributeValue='worktype'
-                  propValue={editData[0] ? editData[0].worktype : ""}
+                  propOnChange={handleEducationChange}
+                  propValidationError={validationError.qualification}
+                  propAttributeValue='qualification'
+                  propValue={editData[0] ? editData[0].qualification : ""}
                 />
               </div>
             </div>
             <AddSecButtons
-              handleSubmit={handleAddWorkType}
+              handleSubmit={handleAddEducation}
               propAllErrorEmpty={areAllErrorsEmpty}
               propValue={id}
             />
@@ -118,4 +127,4 @@ console.log("helloooo",editData)
   );
 }
 
-export default AddWorkType;
+export default AddEducation;
